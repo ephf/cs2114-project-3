@@ -1,3 +1,3 @@
-package com.nextup;
+package com.holdyourspot;
 
 public record Party(String name, int size) {}

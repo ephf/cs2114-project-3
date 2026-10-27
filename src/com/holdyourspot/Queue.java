@@ -1,4 +1,4 @@
-package com.nextup;
+package com.holdyourspot;
 
 public class Queue<T> {
 

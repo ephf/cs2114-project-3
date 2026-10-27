@@ -1,5 +1,5 @@
 <div align="center">
-    <h1>CS2114 - Project 3</h1>
+    <h1>CS2114 - Project 3 - Hold Your Spot</h1>
 </div>
 
 We are building a digital restaurant waitlist manager that can be used by hosts and desk managers. It will be their way 
@@ -9,4 +9,4 @@ if they leave. This application gives staff a clear overview of who is waiting a
 efficiently without losing track of guests or seating people out of order.
 
 > [!IMPORTANT]
-> Source files located in [src/com/nextup/](src/com/nextup)
+> Source files located in [src/com/holdyourspot/](src/com/holdyourspot)

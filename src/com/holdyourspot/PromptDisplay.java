@@ -1,4 +1,4 @@
-package com.nextup;
+package com.holdyourspot;
 
 import java.util.Scanner;
 
