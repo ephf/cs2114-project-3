@@ -45,4 +45,10 @@ public class Queue<T> {
         return front == null;
     }
 
+    int size() {
+        int i = 0;
+        for(Node node = front; node != null; node = node.next) i++;
+        return i;
+    }
+
 }
