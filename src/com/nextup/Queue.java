@@ -11,8 +11,8 @@ public class Queue<T> {
         }
     }
 
-    Node front = null;
-    Node back = null;
+    private Node front = null;
+    private Node back = null;
 
     void enqueue(T data) throws IllegalArgumentException {
         if(data == null) throw new IllegalArgumentException();
