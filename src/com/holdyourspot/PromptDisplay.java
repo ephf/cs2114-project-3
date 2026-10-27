@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class PromptDisplay {
 
-    public record Option(String selector, String value, int canonical_width) {}
+    public record Option(String selector, String value, int canonicalWidth) {}
 
     public static Option option(String selection, String value) {
         return new Option(
@@ -31,7 +31,7 @@ public class PromptDisplay {
         int span = 0;
 
         for(final Option option : options) {
-            System.out.printf("   %s%s", option.value(), spacingString.substring(option.canonical_width()));
+            System.out.printf("   %s%s", option.value(), spacingString.substring(option.canonicalWidth()));
 
             if(++span >= dimensions.span()) {
                 System.out.println();
