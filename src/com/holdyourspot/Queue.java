@@ -1,5 +1,7 @@
 package com.holdyourspot;
 
+import java.util.function.Function;
+
 public class Queue<T> {
 
     private class Node {
@@ -14,7 +16,7 @@ public class Queue<T> {
     private Node front = null;
     private Node back = null;
 
-    void enqueue(T data) throws IllegalArgumentException {
+    public void enqueue(T data) throws IllegalArgumentException {
         if(data == null) throw new IllegalArgumentException();
 
         if(back == null) {
@@ -25,7 +27,7 @@ public class Queue<T> {
         back = back.next = new Node(data);
     }
 
-    T dequeue() throws IndexOutOfBoundsException {
+    public T dequeue() throws IndexOutOfBoundsException {
         final T value = peek();
         front = front.next;
 
@@ -36,19 +38,32 @@ public class Queue<T> {
         return value;
     }
 
-    T peek() throws IndexOutOfBoundsException {
+    public T peek() throws IndexOutOfBoundsException {
         if(front == null) throw new IndexOutOfBoundsException();
         return front.data;
     }
 
-    boolean isEmpty() {
+    public boolean isEmpty() {
         return front == null;
     }
 
-    int size() {
+    public int size() {
         int i = 0;
         for(Node node = front; node != null; node = node.next) i++;
         return i;
+    }
+
+    public void removeIf(Function<T, Boolean> predicate) {
+        for(Node prev = null, cur = front; cur != null; prev = cur, cur = cur.next) {
+            if(!predicate.apply(cur.data)) continue;
+
+            if(prev == null) {
+                front = front.next;
+            } else {
+                prev.next = cur.next;
+            }
+            break;
+        }
     }
 
 }

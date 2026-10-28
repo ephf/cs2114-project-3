@@ -41,6 +41,28 @@ public class PartyManager {
         }
     }
 
+    private boolean successfulFindInRemove;
+
+    void removeParty(String nameStart) {
+        successfulFindInRemove = false;
+
+        parties.removeIf(party -> {
+            if(!party.name().toLowerCase().startsWith(nameStart.toLowerCase())) return false;
+
+            String response;
+            do response = prompter.input(String.format("Are you sure you want to remove %s's party of %d? [y/n] ",
+                    party.name(), party.size())).toLowerCase();
+            while(switch(response) { case "y", "n" -> false; default -> true; });
+
+            successfulFindInRemove = true;
+            return response.equals("y");
+        });
+
+        if(!successfulFindInRemove) {
+            System.out.printf("\33[31mThere are not parties starting with '%s'!\n\33[0m", nameStart);
+        }
+    }
+
     public boolean performNextAction() {
         switch(prompter.getSelection()) {
             case "a":
@@ -62,7 +84,8 @@ public class PartyManager {
                 break;
 
             case "r":
-                // TODO: Remove a party
+                removeParty(
+                        prompter.input("What is the name of the party you want to remove? "));
                 break;
 
             case "q":
