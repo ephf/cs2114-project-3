@@ -63,20 +63,31 @@ public class PartyManager {
         }
     }
 
+    void printPartyList() {
+        parties.enumerate((party, i) ->
+            System.out.printf("\33[36m%d.\33[0m  %s \33[90m(%d)\33[0m\n", i + 1, party.name(), party.size()));
+    }
+
     public boolean performNextAction() {
         switch(prompter.getSelection()) {
             case "a":
+                System.out.println();
                 addParty(
                         prompter.input("What is the name for the party?"),
                         prompter.inputPositiveInteger("How many people?"));
+                System.out.println();
                 break;
 
             case "s":
+                System.out.println();
                 seatNextParty();
+                System.out.println();
                 break;
 
             case "v":
-                // TODO: View Full Waitlist
+                System.out.println();
+                printPartyList();
+                System.out.println();
                 break;
 
             case "n":
@@ -84,8 +95,10 @@ public class PartyManager {
                 break;
 
             case "r":
+                System.out.println();
                 removeParty(
                         prompter.input("What is the name of the party you want to remove? "));
+                System.out.println();
                 break;
 
             case "q":

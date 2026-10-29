@@ -1,5 +1,6 @@
 package com.holdyourspot;
 
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 public class Queue<T> {
@@ -63,6 +64,13 @@ public class Queue<T> {
                 prev.next = cur.next;
             }
             break;
+        }
+    }
+
+    public void enumerate(BiConsumer<T, Integer> consumer) {
+        int i = 0;
+        for(Node cur = front; cur != null; cur = cur.next) {
+            consumer.accept(cur.data, i++);
         }
     }
 
