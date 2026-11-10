@@ -71,7 +71,7 @@ Dropping:
 - Grant: bug fixes and the view-next-to-be-seated feature
 - Tia: tests for everything, and help with new bugs
 
-File ownership:
+## Work attribution
 - Main: Grant, Luci
 - Party: Luci, Nate, Grant
 - PartyManager: Nate, Grant
