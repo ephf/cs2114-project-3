@@ -1,6 +1,3 @@
-
-package test.com.holdyourspot;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.holdyourspot.Party;
