@@ -62,6 +62,7 @@ public class Queue<T> {
                 front = front.next;
             } else {
                 prev.next = cur.next;
+                if(cur == back) back = prev;
             }
             break;
         }

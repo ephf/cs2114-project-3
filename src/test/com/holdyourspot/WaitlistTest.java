@@ -1,5 +1,8 @@
-package com.holdyourspot;
+package test.com.holdyourspot;
 
+import com.holdyourspot.Party;
+import com.holdyourspot.Waitlist;
+import com.holdyourspot.WaitlistEvent;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

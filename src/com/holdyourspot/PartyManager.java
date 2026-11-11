@@ -31,14 +31,36 @@ public class PartyManager {
         parties.enqueue(new Party(name, size));
     }
 
+    private void printPartyDetails(Party party) {
+        System.out.printf("\33[36mThe next party to seat is %s's party with %d %s\n\33[0m",
+                party.name(), party.size(), party.size() == 1 ? "person" : "people");
+    }
+
     void seatNextParty() {
         try {
-            final Party party = parties.dequeue();
-            System.out.printf("\33[36mThe next party to seat is %s's party with %d %s\n\33[0m",
-                    party.name(), party.size(), party.size() == 1 ? "person" : "people");
+            printPartyDetails(parties.dequeue());
         } catch(IndexOutOfBoundsException _) {
             System.out.println("\33[31mThere are no people queued!\33[0m");
         }
+    }
+
+    void printPartyList() {
+        if(parties.isEmpty()) {
+            System.out.println("\33[31mThere are no people queued!\33[0m");
+            return;
+        }
+
+        parties.enumerate((party, i) ->
+            System.out.printf("\33[36m%d.\33[0m  %s \33[90m(%d)\33[0m\n", i + 1, party.name(), party.size()));
+    }
+
+    void printNextParty() {
+        if(parties.isEmpty()) {
+            System.out.println("\33[31mThere are no people queued!\33[0m");
+            return;
+        }
+
+        printPartyDetails(parties.peek());
     }
 
     private boolean successfulFindInRemove;
@@ -61,11 +83,6 @@ public class PartyManager {
         if(!successfulFindInRemove) {
             System.out.printf("\33[31mThere are not parties starting with '%s'!\n\33[0m", nameStart);
         }
-    }
-
-    void printPartyList() {
-        parties.enumerate((party, i) ->
-            System.out.printf("\33[36m%d.\33[0m  %s \33[90m(%d)\33[0m\n", i + 1, party.name(), party.size()));
     }
 
     public boolean performNextAction() {
@@ -91,7 +108,9 @@ public class PartyManager {
                 break;
 
             case "n":
-                // TODO: View Next to be Seated
+                System.out.println();
+                printNextParty();
+                System.out.println();
                 break;
 
             case "r":

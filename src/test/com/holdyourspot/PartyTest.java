@@ -1,7 +1,9 @@
 
-package com.holdyourspot;
+package test.com.holdyourspot;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import com.holdyourspot.Party;
 import org.junit.jupiter.api.Test;
 
 public class PartyTest {

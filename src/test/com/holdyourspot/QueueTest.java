@@ -1,7 +1,10 @@
 
-package com.holdyourspot;
+package test.com.holdyourspot;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import com.holdyourspot.Party;
+import com.holdyourspot.Queue;
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
