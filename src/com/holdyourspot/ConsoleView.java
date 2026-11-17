@@ -78,8 +78,8 @@ public class ConsoleView {
 
     public int getPositiveInteger() throws NumberFormatException {
         final int integer = Integer.parseInt(scanner.nextLine().trim());
-        if(integer < 0) throw new NumberFormatException();
-        return integer;
+        if(integer > 0) return integer;
+        throw new NumberFormatException();
     }
 
     public boolean getYesNo() throws IllegalArgumentException {
