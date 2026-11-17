@@ -16,16 +16,18 @@ public class Queue<T> {
 
     private Node front = null;
     private Node back = null;
+    private int size = 0;
 
     public void enqueue(T data) throws IllegalArgumentException {
         if(data == null) throw new IllegalArgumentException();
 
         if(back == null) {
             front = back = new Node(data);
-            return;
+        } else {
+            back = back.next = new Node(data);
         }
 
-        back = back.next = new Node(data);
+        size++;
     }
 
     public T dequeue() throws IndexOutOfBoundsException {
@@ -36,6 +38,7 @@ public class Queue<T> {
             back = null;
         }
 
+        size--;
         return value;
     }
 
@@ -49,9 +52,7 @@ public class Queue<T> {
     }
 
     public int size() {
-        int i = 0;
-        for(Node node = front; node != null; node = node.next) i++;
-        return i;
+        return size;
     }
 
     public void removeIf(Function<T, Boolean> predicate) {
@@ -64,6 +65,8 @@ public class Queue<T> {
                 prev.next = cur.next;
                 if(cur == back) back = prev;
             }
+
+            size--;
             break;
         }
     }
