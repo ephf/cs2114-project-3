@@ -105,7 +105,7 @@ class WaitlistTest {
         Waitlist w = new Waitlist();
         w.addParty("Smith", 4);
         w.addParty("Jones", 2);
-        List<Party> found = w.findByName("jones");
+        List<Party> found = w.searchForName("jones");
         assertEquals(1, found.size());
         assertEquals("Jones", found.get(0).name());
     }
@@ -113,7 +113,7 @@ class WaitlistTest {
     // W10 - B
     @Test void findByNameNull() {
         Waitlist w = new Waitlist();
-        assertThrows(IllegalArgumentException.class, () -> w.findByName(null));
+        assertThrows(IllegalArgumentException.class, () -> w.searchForName(null));
     }
 
     // W11 - N

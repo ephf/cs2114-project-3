@@ -55,7 +55,7 @@ public class Queue<T> {
         return size;
     }
 
-    public void removeIf(Function<T, Boolean> predicate) {
+    public T removeIf(Function<T, Boolean> predicate) {
         for(Node prev = null, cur = front; cur != null; prev = cur, cur = cur.next) {
             if(!predicate.apply(cur.data)) continue;
 
@@ -67,8 +67,10 @@ public class Queue<T> {
             }
 
             size--;
-            break;
+            return cur.data;
         }
+
+        return null;
     }
 
     public void enumerate(BiConsumer<T, Integer> consumer) {
