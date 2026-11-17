@@ -6,8 +6,11 @@ public class PartyManager {
 
     private static final int PROMPT_OPTION_WIDTH = 32;
     private static final int PROMPT_OPTION_SPAN = 3;
+    private static final int HISTORY_SIZE = 5;
+
 
     private final Queue<Party> parties = new Queue<>();
+    private final History<Party> seatingHistory = new History<>(HISTORY_SIZE);
     private final PromptDisplay prompter;
 
     public PartyManager(Scanner scanner) {
@@ -18,6 +21,7 @@ public class PartyManager {
                 PromptDisplay.option("v", "(V)iew Full Waitlist"),
                 PromptDisplay.option("n", "View (N)ext to be Seated"),
                 PromptDisplay.option("r", "(R)emove a party"),
+                PromptDisplay.option("h", "Seating (H)istory"),
                 PromptDisplay.option("q", "(Q)uit"));
     }
 
@@ -38,7 +42,9 @@ public class PartyManager {
 
     void seatNextParty() {
         try {
-            printPartyDetails(parties.dequeue());
+            final Party party = parties.dequeue();
+            seatingHistory.record(party);
+            printPartyDetails(party);
         } catch(IndexOutOfBoundsException _) {
             System.out.println("\33[31mThere are no people queued!\33[0m");
         }
@@ -59,8 +65,17 @@ public class PartyManager {
             System.out.println("\33[31mThere are no people queued!\33[0m");
             return;
         }
-
         printPartyDetails(parties.peek());
+    }
+
+    void printSeatingHistory() {
+        if(seatingHistory.isEmpty()) {
+            System.out.println("\33[31mNo parties have been seated yet!\33[0m");
+            return;
+        }
+
+        seatingHistory.enumerate((party, i) ->
+                System.out.printf("\33[36m%d.\33[0m  %s \33[90m(%d)\33[0m\n", i + 1, party.name(), party.size()));
     }
 
     private boolean successfulFindInRemove;
@@ -117,6 +132,12 @@ public class PartyManager {
                 System.out.println();
                 removeParty(
                         prompter.input("What is the name of the party you want to remove? "));
+                System.out.println();
+                break;
+
+            case "h":
+                System.out.println();
+                printSeatingHistory();
                 System.out.println();
                 break;
 
