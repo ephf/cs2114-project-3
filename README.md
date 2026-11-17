@@ -78,7 +78,6 @@ Two places where the line is still blurry, which we want to fix before the final
 
 ### What doesn't work yet?
 
-- **Size `0` crashes the program.** `ConsoleView.getPositiveInteger` only rejects negative numbers, so `0` passes the view, and `Waitlist.addParty` throws `IllegalArgumentException`, which the controller does not catch. Non-numeric input like `abc` is handled correctly.
 - **`Queue.removeIf` bug when the queue has exactly one element.** Removing the only element sets `front` to `null` but leaves `back` pointing at the removed node, so the next `enqueue` is lost (`size` says 1, but `isEmpty()` is true). The existing regression test only covers removing the tail of a two-element queue, so no test catches this yet.
 - **Removing through the console does not fire a `REMOVED` event**, because it uses `removePartyIf`. As a result, removed parties cannot show up in history, and answering "n" to every match shows "Cannot find a party" even though a match existed.
 - **Duplicate-name confirmation is not implemented.** The model support (`hasPartyNamed`) exists and is tested, but the controller does not use it.
