@@ -81,9 +81,7 @@ Two places where the line is still blurry, which we want to fix before the final
 - **`Queue.removeIf` bug when the queue has exactly one element.** Removing the only element sets `front` to `null` but leaves `back` pointing at the removed node, so the next `enqueue` is lost (`size` says 1, but `isEmpty()` is true). The existing regression test only covers removing the tail of a two-element queue, so no test catches this yet.
 - **Removing through the console does not fire a `REMOVED` event**, because it uses `removePartyIf`. As a result, removed parties cannot show up in history, and answering "n" to every match shows "Cannot find a party" even though a match existed.
 - **Duplicate-name confirmation is not implemented.** The model support (`hasPartyNamed`) exists and is tested, but the controller does not use it.
-- **Help option is not implemented.**
 - **Ticket numbers are not shown** in the waitlist view or the remove flow, so two parties with the same name are hard to tell apart.
-- **History ordering:** the list prints oldest first. A host probably expects the most recent party at the top.
 - **Missing tests:** `Waitlist.removePartyIf`, `Waitlist.enumerate`, and the controller's history listener have no tests, and there is no test for removing the only element of a `Queue`.
 - **End of input:** if standard input is closed, `promptUntilValid` retries forever because it catches every exception.
 
