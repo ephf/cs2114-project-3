@@ -4,30 +4,6 @@
 
 Hold Your Spot is a Java console waitlist manager for restaurant hosts. Parties join the back of a single first-come, first-served waitlist and are seated from the front. The waitlist is stored in a custom generic singly linked `Queue<T>` that tracks `front`, `back`, and `size`.
 
-Source: [`src/com/holdyourspot/`](src/com/holdyourspot) | Tests: [`unit_tests/`](unit_tests)
-
-## How to Compile and Run
-
-Requires JDK 22 or newer (the code uses unnamed `_` variables). For tests, download the JUnit Platform Console Standalone jar and save it in the repo root as `junit-platform-console-standalone.jar`. Run all commands from the repo root. On Windows, replace `:` with `;` in classpaths.
-
-**Run the program**
-
-```bash
-javac -d out src/com/holdyourspot/*.java
-java -cp out com.holdyourspot.Main
-```
-
-Menu: `a` add a party, `s` seat next, `v` view waitlist, `n` view next to be seated, `r` remove a party, `q` quit.
-
-**Run the tests**
-
-```bash
-javac -cp junit-platform-console-standalone.jar:out -d out/test unit_tests/*.java
-java -jar junit-platform-console-standalone.jar execute --class-path out:out/test --scan-class-path out/test
-```
-
-In IntelliJ: mark `src` as Sources Root, `unit_tests` as Test Sources Root, add JUnit 5, then run the `unit_tests` folder. Tests only use model classes (no `Scanner`, `System.out`, or view code).
-
 ## Design
 
 | Layer | Classes | Role |
