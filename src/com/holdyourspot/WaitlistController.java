@@ -6,8 +6,17 @@ import java.util.Scanner;
 public class WaitlistController {
 
     private final Waitlist waitlist = new Waitlist();
+    private final History<Party> history = new History<>(10);
     private final Scanner scanner = new Scanner(System.in);
     private final ConsoleView consoleView = new ConsoleView(scanner);
+
+    WaitlistController() {
+        waitlist.addListener(event -> {
+            if(event.type() == WaitlistEvent.Type.SEATED) {
+                history.record(event.party());
+            }
+        });
+    }
 
     private String getPartyName() {
         final var name = scanner.nextLine().trim();
@@ -57,6 +66,15 @@ public class WaitlistController {
                     } catch(IndexOutOfBoundsException _) {
                         ConsoleView.printError("There are no parties queued!\n");
                     }
+                    break;
+
+                case "h":
+                    if(history.isEmpty()) {
+                        System.out.println("\33[90mHistory is empty\33[0m");
+                        break;
+                    }
+
+                    history.enumerate((party, _) -> System.out.printf("(-) %s\n", party));
                     break;
 
                 case "r":

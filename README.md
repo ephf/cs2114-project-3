@@ -9,11 +9,11 @@ Hold Your Spot is a Java console waitlist manager for restaurant hosts. Parties 
 | Layer | Classes | Role |
 | --- | --- | --- |
 | Model | `Party`, `Queue<T>`, `Waitlist`, `WaitlistEvent`, `WaitlistListener`, `History` | FIFO order, ticket IDs, validation, change events, seating history |
-| Controller | `PartyManager` | Reads choices, parses input, calls the model |
-| View | `PromptDisplay` | Menus, prompts, formatted output |
+| Controller | `WaitlistController` | Reads choices, parses input, calls the model |
+| View | `ConsoleView`, `GridPrinter` | Menus, prompts, formatted output |
 | Bootstrap | `Main` | Creates objects and runs the loop |
 
-`enqueue`, `dequeue`, `peek`, `isEmpty`, and `size` are O(1). `removeIf` and `enumerate` are O(n). `Waitlist` fires a `WaitlistEvent` (ADDED, SEATED, REMOVED) to listeners only after a change succeeds. `History` is one of those listeners.
+`enqueue`, `dequeue`, `peek`, `isEmpty`, and `size` are O(1). `removeIf` and `enumerate` are O(n). `Waitlist` fires a `WaitlistEvent` (`ADDED`, `SEATED`, `REMOVED`) to listeners only after a change succeeds. `History` is one of those listeners.
 
 ## Reflection
 

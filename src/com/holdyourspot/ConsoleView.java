@@ -16,6 +16,7 @@ public class ConsoleView {
             new Option("s", "(S)eat Next Party"),
             new Option("v", "(V)iew Full Waitlist"),
             new Option("n", "View (N)ext to be Seated"),
+            new Option("h", "View Seating (H)istory"),
             new Option("r", "(R)emove a party"),
             new Option("q", "(Q)uit"),
     };

@@ -30,6 +30,8 @@ public class GridPrinter {
                 System.out.println();
             }
         }
+
+        if(span != 0) System.out.println();
     }
 
 }
