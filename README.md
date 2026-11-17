@@ -19,7 +19,7 @@ Hold Your Spot is a Java console waitlist manager for restaurant hosts. Parties 
 
 ### How did your design absorb the change?
 
-**Feature: Seating History.** The host can view the last N parties that were seated or removed, most recent first.
+**Feature: Seating History.** The host can view the latest parties that were seated or removed, most recent first.
 
 - **Touched:** `History` (new, implements `WaitlistListener`) and `PartyManager` (new menu option, N validation, printing, listener registration).
 - **Not touched:** `Queue`, `Party`, `Waitlist`, `WaitlistEvent`, `WaitlistListener`.
