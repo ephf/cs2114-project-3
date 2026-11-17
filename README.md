@@ -23,13 +23,13 @@ Hold Your Spot is a Java console waitlist manager for restaurant hosts. Parties 
 
 - **Touched:** `History` (new, implements `WaitlistListener`) and `PartyManager` (new menu option, N validation, printing, listener registration).
 - **Not touched:** `Queue`, `Party`, `Waitlist`, `WaitlistEvent`, `WaitlistListener`.
-- **vs. D3 prediction:** We predicted `PartyManager` would change, `History` would be new, and `Queue`, `Party`, and `Main` would not change. That matched. The surprise was that the history code was easy only because `WaitlistEvent` and `WaitlistListener` already existed. `PartyManager` used `Queue<Party>` directly, so the model never fired events, and we had to route all add, seat, and remove actions through `Waitlist` first. That rewiring was the real cost of the change.
+- **vs. Deliverable 3 prediction:** We predicted `PartyManager` would change, `History` would be new, and `Queue`, `Party`, and `Main` would not change. That matched. The surprise was that the history code was easy only because `WaitlistEvent` and `WaitlistListener` already existed. `PartyManager` used `Queue<Party>` directly, so the model never fired events, and we had to route all add, seat, and remove actions through `Waitlist` first. That rewiring was the real cost of the change.
 
 ### Did the change cross the model/view line?
 
 Once. The view had to learn about a new history record type so it can print entries. It does not know how `History` stores records or that it listens to `Waitlist`, and `Queue` internals never reached the view. The layers were mixed in `PartyManager`, which ran prompts, printed output, and held the name-matching rule. We moved matching into `Waitlist` (`findByName`, `removeParty` by ticket).
 
-### What changed from the D3 plan?
+### What changed from the Deliverable 3 plan?
 
 - **Structure:** We kept `Queue<T>` (generic), `PartyManager`, `PromptDisplay`, and `Main` instead of `PartyQueue`, `ConsoleView`, `WaitlistController`, and `HoldYourSpot`.
 - **Queue methods:** We implemented `removeIf` and `enumerate` instead of `remove(ticketId)`, `findByName`, and `toList`. `Waitlist` builds those operations on top, which keeps restaurant rules out of the queue.
