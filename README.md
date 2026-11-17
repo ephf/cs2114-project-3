@@ -116,17 +116,17 @@ Once. The view had to learn about a new history record type so it can print entr
 | `Main.java` | Grant, Luci | Wrote, revised |
 | `Party.java` | Luci, Nate, Grant | Wrote (record), reviewed |
 | `Queue.java` | Grant | Wrote; fixed `removeIf` tail case |
-| `Waitlist.java` | Luci | Wrote (ticket IDs, events, validation); GenAI-assisted |
-| `WaitlistEvent.java` | Luci | Wrote |
-| `WaitlistListener.java` | Luci | Wrote |
+| `Waitlist.java` | Tia, Luci | Wrote (ticket IDs, events, validation); GenAI-assisted |
+| `WaitlistEvent.java` | Tia | Wrote |
+| `WaitlistListener.java` | Tia, Luci | Wrote |
 | `History.java` | Nate | Wrote; GenAI-assisted |
 | `PartyManager.java` | Nate, Grant | Wrote, revised, rewired to `Waitlist` |
 | `PromptDisplay.java` | Grant, Luci | Wrote, reviewed |
 | `PartyTest.java` | Tia, Grant | Wrote, tested |
-| `QueueTest.java` | Tia | Wrote, tested, fixed failing test |
-| `WaitlistTest.java` | Luci, Tia | Wrote (W1-W18), reviewed |
+| `QueueTest.java` | Tia, Grant | Wrote, tested, fixed failing test |
+| `WaitlistTest.java` | Tia, Luci | Wrote (W1-W18), reviewed |
 | `HistoryTest.java` | Tia, Nate | Wrote, tested |
 
 ## GenAI Use
 
-We each used GenAI individually and told the team where. In the scope and spec, GenAI helped with project and stretch-goal ideas, finding holes in our bad-input list and test plan, and wording. Nate used Claude to draw the system diagram from a written description and checked it against the spec. Luci used Gemini to check the tests for missing cases. Grant used ChatGPT on the model/view boundary. For this checkpoint, Claude reviewed the repository against the assignment, found bugs (the `Queue.removeIf` head case and the console not yet using `Waitlist`), and helped draft this README. We checked every suggestion against our code and rewrote it where it didn't match what we built.
+We each used GenAI individually and told the team where. In the scope and spec, GenAI helped with project and stretch-goal ideas, finding holes in our bad-input list and test plan, and wording. Nate used Claude to draw the system diagram from a written description and checked it against the spec. Tia used ChatGPT to find missing holes in the test classes she wrote. Grant used ChatGPT on the model/view boundary. For this checkpoint, Claude reviewed the repository against the assignment, found bugs (the `Queue.removeIf` head case and the console not yet using `Waitlist`), and helped draft this README. We checked every suggestion against our code and rewrote it where it didn't match what we built.
