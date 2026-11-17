@@ -6,12 +6,12 @@ Hold Your Spot is a Java console waitlist manager for restaurant hosts. Parties 
 
 ## Design
 
-| Layer | Classes | Role |
-| --- | --- | --- |
-| Model | `Party`, `Queue<T>`, `Waitlist`, `WaitlistEvent`, `WaitlistListener`, `History` | FIFO order, ticket IDs, validation, change events, seating history |
-| Controller | `WaitlistController` | Reads choices, parses input, calls the model |
-| View | `ConsoleView`, `GridPrinter` | Menus, prompts, formatted output |
-| Bootstrap | `Main` | Creates objects and runs the loop |
+| Layer      | Classes                                                                         | Role                                                               |
+|------------|---------------------------------------------------------------------------------|--------------------------------------------------------------------|
+| Model      | `Party`, `Queue<T>`, `Waitlist`, `WaitlistEvent`, `WaitlistListener`, `History` | FIFO order, ticket IDs, validation, change events, seating history |
+| Controller | `WaitlistController`                                                            | Reads choices, parses input, calls the model                       |
+| View       | `ConsoleView`, `GridPrinter`                                                    | Menus, prompts, formatted output                                   |
+| Bootstrap  | `Main`                                                                          | Creates objects and runs the loop                                  |
 
 `enqueue`, `dequeue`, `peek`, `isEmpty`, and `size` are O(1). `removeIf` and `enumerate` are O(n). `Waitlist` fires a `WaitlistEvent` (`ADDED`, `SEATED`, `REMOVED`) to listeners only after a change succeeds. `History` is one of those listeners.
 
@@ -21,9 +21,9 @@ Hold Your Spot is a Java console waitlist manager for restaurant hosts. Parties 
 
 **Feature: Seating History.** The host can view the latest parties that were seated or removed, most recent first.
 
-- **Touched:** `History` (new, implements `WaitlistListener`) and `PartyManager` (new menu option, N validation, printing, listener registration).
+- **Touched:** `History` (new) and `PartyManager` changed to `WaitlistController` (new menu option, validation, printing, listener registration).
 - **Not touched:** `Queue`, `Party`, `Waitlist`, `WaitlistEvent`, `WaitlistListener`.
-- **vs. Deliverable 3 prediction:** We predicted `PartyManager` would change, `History` would be new, and `Queue`, `Party`, and `Main` would not change. That matched. The surprise was that the history code was easy only because `WaitlistEvent` and `WaitlistListener` already existed. `PartyManager` used `Queue<Party>` directly, so the model never fired events, and we had to route all add, seat, and remove actions through `Waitlist` first. That rewiring was the real cost of the change.
+- **vs. Deliverable 3 prediction:** We predicted `PartyManager` would change, `History` would be new, and `Queue`, `Party`, and `Main` would not change. That matched, other than `Main` getting simplified. The surprise was that the history code was easy only because `WaitlistEvent` and `WaitlistListener` already existed. `PartyManager` used `Queue<Party>` directly, so the model never fired events, and we had to route all add, seat, and remove actions through `Waitlist` first. That rewiring was the real cost of the change.
 
 ### Did the change cross the model/view line?
 
@@ -31,7 +31,7 @@ Once. The view had to learn about a new history record type so it can print entr
 
 ### What changed from the Deliverable 3 plan?
 
-- **Structure:** We kept `Queue<T>` (generic), `PartyManager`, `PromptDisplay`, and `Main` instead of `PartyQueue`, `ConsoleView`, `WaitlistController`, and `HoldYourSpot`.
+- **Structure:** We kept `Queue<T>` (generic), and `Main` and implemented `ConsoleView`, `WaitlistController`.
 - **Queue methods:** We implemented `removeIf` and `enumerate` instead of `remove(ticketId)`, `findByName`, and `toList`. `Waitlist` builds those operations on top, which keeps restaurant rules out of the queue.
 - **Ticket IDs:** They live in `Waitlist`'s private `Entry` (never reused), not in `Party`.
 - **Validation:** Name and size checks are in `Waitlist.addParty`, not `Party.validateName` and `validateSize`.
@@ -40,25 +40,18 @@ Once. The view had to learn about a new history record type so it can print entr
 
 ### What doesn't work yet?
 
-- The console doesn't fully use `Waitlist` yet. `PartyManager` still uses its own `Queue<Party>`, so tickets, validation, and events aren't used by the console.
-- The console accepts blank party names, and `Party` accepts blank or null names and sizes below 1. `PartyTest` currently documents this.
 - Duplicate-name confirmation and the help option are not implemented.
-- `Queue.removeIf` has a head bug. Removing the only node doesn't reset `back`, so the next `enqueue` is lost. `Waitlist.removeParty` works around it by rebuilding the queue.
 - Ticket numbers aren't shown in the view, so duplicate names are hard to tell apart when removing.
-- Missing tests: `removeIf` on the head or only node followed by `enqueue`, a `removeIf` null predicate, and more `History` edge cases.
 
 ## Next Steps
 
 ### What is left for the final build?
 
-1. Route the console through `Waitlist` and print confirmations from a `WaitlistListener`.
-2. Fix `Queue.removeIf` (reset `back` on head removal), add tests, and let `Waitlist.removeParty` use it again.
-3. Bad-input fixes: blank-name re-prompt, `Party` constructor validation, and update `PartyTest` to expect `IllegalArgumentException`.
-4. Show ticket numbers in the list and the remove flow.
-5. Duplicate-name confirmation.
-6. Help option.
-7. History polish and tests (empty history, N too large, N at most 0 or non-numeric).
-8. Message polish and a final full test run.
+1. Show ticket numbers in the list and the remove flow.
+2. Duplicate-name confirmation.
+3. Help option.
+4. History polish and tests (empty history, N too large, N at most 0 or non-numeric).
+5. Message polish and a final full test run.
 
 ### Which stretch goals are you committing to, and which are you dropping?
 
@@ -76,32 +69,32 @@ Once. The view had to learn about a new history record type so it can print entr
 
 ### Who does what?
 
-| Item | Owner |
-| --- | --- |
-| Route console through `Waitlist`, blank-name handling, duplicate confirmation | Grant |
-| `Queue.removeIf` fix, `Party` validation | Luci |
-| Seating history (`History` + menu), help option | Nate |
-| No-show handling (if time allows) | Luci |
-| Tests, `History` tests, final test run | Tia |
-| Message polish, demo script | Grant, Nate |
+| Item                                                                          | Owner       |
+|-------------------------------------------------------------------------------|-------------|
+| Route console through `Waitlist`, blank-name handling, duplicate confirmation | Grant       |
+| `Queue.removeIf` fix, `Party` validation                                      | Luci        |
+| Seating history (`History` + menu), help option                               | Nate        |
+| No-show handling (if time allows)                                             | Luci        |
+| Tests, `History` tests, final test run                                        | Tia         |
+| Message polish, demo script                                                   | Grant, Nate |
 
 ## Attribution
 
-| Class or test file | Team member(s) | Contribution |
-| --- | --- | --- |
-| `Main.java` | Grant, Luci | Wrote, revised |
-| `Party.java` | Luci, Nate, Grant | Wrote (record), reviewed |
-| `Queue.java` | Grant | Wrote; fixed `removeIf` tail case |
-| `Waitlist.java` | Tia, Luci | Wrote (ticket IDs, events, validation); GenAI-assisted |
-| `WaitlistEvent.java` | Tia | Wrote |
-| `WaitlistListener.java` | Tia, Luci | Wrote |
-| `History.java` | Nate | Wrote; GenAI-assisted |
-| `PartyManager.java` | Nate, Grant | Wrote, revised, rewired to `Waitlist` |
-| `PromptDisplay.java` | Grant, Luci | Wrote, reviewed |
-| `PartyTest.java` | Tia, Grant | Wrote, tested |
-| `QueueTest.java` | Tia, Grant | Wrote, tested, fixed failing test |
-| `WaitlistTest.java` | Tia, Luci | Wrote (W1-W18), reviewed |
-| `HistoryTest.java` | Tia, Nate | Wrote, tested |
+| Class or test file         | Team member(s)    | Contribution                                           |
+|----------------------------|-------------------|--------------------------------------------------------|
+| `Main.java`                | Grant, Luci       | Wrote, revised                                         |
+| `Party.java`               | Luci, Nate, Grant | Wrote (record), reviewed                               |
+| `Queue.java`               | Grant             | Wrote; fixed `removeIf` tail case                      |
+| `Waitlist.java`            | Tia, Luci         | Wrote (ticket IDs, events, validation); GenAI-assisted |
+| `WaitlistEvent.java`       | Tia               | Wrote                                                  |
+| `WaitlistListener.java`    | Tia, Luci         | Wrote                                                  |
+| `History.java`             | Nate              | Wrote; GenAI-assisted                                  |
+| `WailtListController.java` | Nate, Grant       | Wrote, revised, rewired to `Waitlist`                  |
+| `ConsoleView.java`         | Grant, Luci       | Wrote, reviewed                                        |
+| `PartyTest.java`           | Tia, Grant        | Wrote, tested                                          |
+| `QueueTest.java`           | Tia, Grant        | Wrote, tested, fixed failing test                      |
+| `WaitlistTest.java`        | Tia, Luci         | Wrote (W1-W18), reviewed                               |
+| `HistoryTest.java`         | Tia, Nate         | Wrote, tested                                          |
 
 ## GenAI Use
 
