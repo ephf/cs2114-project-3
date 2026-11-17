@@ -3,6 +3,8 @@ package com.holdyourspot;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 /** A FIFO waitlist with monotonically increasing ticket numbers. */
 public class Waitlist {
@@ -80,12 +82,22 @@ public class Waitlist {
         return waiting.isEmpty();
     }
 
+    public void enumerate(BiConsumer<Party, Integer> consumer) {
+        waiting.enumerate((entry, i) -> consumer.accept(entry.party(), i));
+    }
+
+    public Party removePartyIf(Function<Party, Boolean> predicate) throws NoSuchElementException {
+        final var removedEntry = waiting.removeIf(entry -> predicate.apply(entry.party()));
+        if(removedEntry == null) throw new NoSuchElementException();
+        return removedEntry.party();
+    }
+
     public void addListener(WaitlistListener listener) throws IllegalArgumentException {
         if(listener == null) throw new IllegalArgumentException("Listener cannot be null");
         listeners.add(listener);
     }
 
-    private static void validateName(String name) throws IllegalArgumentException {
+    public static void validateName(String name) throws IllegalArgumentException {
         if (name == null || name.isBlank()) throw new IllegalArgumentException("Party name cannot be blank");
     }
 

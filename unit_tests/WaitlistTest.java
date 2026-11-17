@@ -54,7 +54,7 @@ class WaitlistTest {
         Waitlist w = new Waitlist();
         List<WaitlistEvent> events = new ArrayList<>();
         w.addListener(events::add);
-        assertThrows(NoSuchElementException.class, w::seatNext);
+        assertThrows(IndexOutOfBoundsException.class, w::seatNext);
         assertTrue(events.isEmpty());
     }
 
@@ -73,7 +73,7 @@ class WaitlistTest {
     // W6 - B
     @Test void peekNextEmpty() {
         Waitlist w = new Waitlist();
-        assertThrows(NoSuchElementException.class, w::peekNext);
+        assertThrows(IndexOutOfBoundsException.class, w::peekNext);
     }
 
     // W7 - N
