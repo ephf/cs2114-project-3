@@ -1,85 +1,132 @@
-<div align="center">
-    <h1>CS2114 - Project 3 - Hold Your Spot</h1>
-</div>
+# Hold Your Spot
 
-We are building a digital restaurant waitlist manager that can be used by hosts and desk managers. It will be their way 
-of managing waiting customers during busy service hours. They will be able to add walk-in parties to a waitlist, view 
-who's next in line, assign parties to open tables when they become available, and update party details or remove parties 
-if they leave. This application gives staff a clear overview of who is waiting and how long the line is, helping run things 
-efficiently without losing track of guests or seating people out of order.
+**Team:** Luci, Nate, Grant, Tia
 
-> [!IMPORTANT]
-> Source files located in [src/com/holdyourspot/](src/com/holdyourspot)
+Hold Your Spot is a Java console waitlist manager for restaurant hosts. Parties join the back of a single first-come, first-served waitlist and are seated from the front. The waitlist is stored in a custom generic singly linked `Queue<T>` that tracks `front`, `back`, and `size`.
 
-# Reflection
+Source: [`src/com/holdyourspot/`](src/com/holdyourspot) | Tests: [`unit_tests/`](unit_tests)
 
-## What changed from the specification?
+## How to Compile and Run
 
-A good amount changed in our classes. We originally planned to use WaitlistEvent and WaitlistListener, but we didn't implement them because we found an easier way to do it. We also renamed a few classes, used a generic Queue<T>, and haven't implemented the ticket ID system yet. Some methods and exceptions were also changed so that each scenario throws a more appropriate exception.
+Requires JDK 22 or newer (the code uses unnamed `_` variables). For tests, download the JUnit Platform Console Standalone jar and save it in the repo root as `junit-platform-console-standalone.jar`. Run all commands from the repo root. On Windows, replace `:` with `;` in classpaths.
 
-## Did the model really stand alone?
+**Run the program**
 
-Mostly. Queue<T> has no System.out or Scanner. However, the model, controller, and view lines all moved into PartyManager, which runs the prompts and also contains the domain rule of matching names.
+```bash
+javac -d out src/com/holdyourspot/*.java
+java -cp out com.holdyourspot.Main
+```
 
-## What happened to our unknowns?
+Menu: `a` add a party, `s` seat next, `v` view waitlist, `n` view next to be seated, `r` remove a party, `q` quit.
 
-We figured out how to make mid-queue removal work by using a prev pointer in removeIf. We also found a solution for duplicate names using name-prefix matching, which turned out to be simpler to implement than ticket IDs.
+**Run the tests**
 
-## What doesn't work yet?
+```bash
+javac -cp junit-platform-console-standalone.jar:out -d out/test unit_tests/*.java
+java -jar junit-platform-console-standalone.jar execute --class-path out:out/test --scan-class-path out/test
+```
 
-We haven't implemented the view-next-to-be-seated feature, which is part of our MVP. We also need to add bad-input handling for blank party names, which are currently accepted. Duplicate-name confirmation and the help feature still need to be added as well.
+In IntelliJ: mark `src` as Sources Root, `unit_tests` as Test Sources Root, add JUnit 5, then run the `unit_tests` folder. Tests only use model classes (no `Scanner`, `System.out`, or view code).
 
+## Design
 
-# Next Steps
+| Layer | Classes | Role |
+| --- | --- | --- |
+| Model | `Party`, `Queue<T>`, `Waitlist`, `WaitlistEvent`, `WaitlistListener`, `History` | FIFO order, ticket IDs, validation, change events, seating history |
+| Controller | `PartyManager` | Reads choices, parses input, calls the model |
+| View | `PromptDisplay` | Menus, prompts, formatted output |
+| Bootstrap | `Main` | Creates objects and runs the loop |
 
-## What is left to finish the MVP?
+`enqueue`, `dequeue`, `peek`, `isEmpty`, and `size` are O(1). `removeIf` and `enumerate` are O(n). `Waitlist` fires a `WaitlistEvent` (ADDED, SEATED, REMOVED) to listeners only after a change succeeds. `History` is one of those listeners.
 
-1. Fix the bug in removeIf. We need to update back when the removed node is the tail.
-2. Implement the view-next-to-be-seated feature, which should be fairly simple using peek().
-3. Finish the smaller items: blank party name validation, duplicate-name confirmation, the help feature, and polishing console messages.
+## Reflection
 
-## Change feature: Seating History
+### How did your design absorb the change?
 
-We will add a seating history that shows the last N parties seated, to better manage exactly who is at a table. It will touch the PartyManager class by adding a new option to it, and we will create a new class called History to store the records.
+**Feature: Seating History.** The host can view the last N parties that were seated or removed, most recent first.
 
-Prediction:
-- PartyManager will change (new menu option).
-- History will be a new class.
-- Queue, Party, and Main should not need to change.
+- **Touched:** `History` (new, implements `WaitlistListener`) and `PartyManager` (new menu option, N validation, printing, listener registration).
+- **Not touched:** `Queue`, `Party`, `Waitlist`, `WaitlistEvent`, `WaitlistListener`.
+- **vs. D3 prediction:** We predicted `PartyManager` would change, `History` would be new, and `Queue`, `Party`, and `Main` would not change. That matched. The surprise was that the history code was easy only because `WaitlistEvent` and `WaitlistListener` already existed. `PartyManager` used `Queue<Party>` directly, so the model never fired events, and we had to route all add, seat, and remove actions through `Waitlist` first. That rewiring was the real cost of the change.
 
-## Stretch goals
+### Did the change cross the model/view line?
 
-Attempting:
-- Waitlist history. We think it will be a valuable feature for the app.
-- No-show handling, if we have time. This covers a party that doesn't show up when their name is called.
+Once. The view had to learn about a new history record type so it can print entries. It does not know how `History` stores records or that it listens to `Waitlist`, and `Queue` internals never reached the view. The layers were mixed in `PartyManager`, which ran prompts, printed output, and held the name-matching rule. We moved matching into `Waitlist` (`findByName`, `removeParty` by ticket).
 
-Dropping:
-- Seating by table size, since it conflicts with our FIFO design.
-- Wait time calculator, since we haven't resolved the best way to estimate the time and it would need to be personalized for each restaurant.
+### What changed from the D3 plan?
 
-## New tests needed
+- **Structure:** We kept `Queue<T>` (generic), `PartyManager`, `PromptDisplay`, and `Main` instead of `PartyQueue`, `ConsoleView`, `WaitlistController`, and `HoldYourSpot`.
+- **Queue methods:** We implemented `removeIf` and `enumerate` instead of `remove(ticketId)`, `findByName`, and `toList`. `Waitlist` builds those operations on top, which keeps restaurant rules out of the queue.
+- **Ticket IDs:** They live in `Waitlist`'s private `Entry` (never reused), not in `Party`.
+- **Validation:** Name and size checks are in `Waitlist.addParty`, not `Party.validateName` and `validateSize`.
+- **Events:** `WaitlistEvent` also carries the ticket ID, and `WaitlistListener` has one method, `onWaitlistEvent`.
+- **Tests:** Normal, bad-input, and edge tests exist for `Party`, `Queue`, `Waitlist` (W1-W18 plus a tail-removal regression), and `History`.
 
-- View next to be seated, once it's implemented
-- Blank name validation
-- Duplicate-name confirmation
-- Waitlist history, including an empty history and making sure everything is recorded correctly for removals and entries
+### What doesn't work yet?
 
-## Who does what?
+- The console doesn't fully use `Waitlist` yet. `PartyManager` still uses its own `Queue<Party>`, so tickets, validation, and events aren't used by the console.
+- The console accepts blank party names, and `Party` accepts blank or null names and sizes below 1. `PartyTest` currently documents this.
+- Duplicate-name confirmation and the help option are not implemented.
+- `Queue.removeIf` has a head bug. Removing the only node doesn't reset `back`, so the next `enqueue` is lost. `Waitlist.removeParty` works around it by rebuilding the queue.
+- Ticket numbers aren't shown in the view, so duplicate names are hard to tell apart when removing.
+- Missing tests: `removeIf` on the head or only node followed by `enqueue`, a `removeIf` null predicate, and more `History` edge cases.
 
-- Nate: waitlist history feature
-- Luci: no-show handling
-- Grant: bug fixes and the view-next-to-be-seated feature
-- Tia: tests for everything, and help with new bugs
+## Next Steps
 
-## Work attribution
-- Main: Grant, Luci
-- Party: Luci, Nate, Grant
-- PartyManager: Nate, Grant
-- PromptDisplay: Grant, Luci
-- Queue: Grant
-- MainTest: Tia, Luci
-- PartyTest: Tia, Grant
-- PartyManagerTest: Tia, Grant
-- PromptDisplayTest: Tia, Nate
-- QueueTest: Tia
+### What is left for the final build?
 
+1. Route the console through `Waitlist` and print confirmations from a `WaitlistListener`.
+2. Fix `Queue.removeIf` (reset `back` on head removal), add tests, and let `Waitlist.removeParty` use it again.
+3. Bad-input fixes: blank-name re-prompt, `Party` constructor validation, and update `PartyTest` to expect `IllegalArgumentException`.
+4. Show ticket numbers in the list and the remove flow.
+5. Duplicate-name confirmation.
+6. Help option.
+7. History polish and tests (empty history, N too large, N at most 0 or non-numeric).
+8. Message polish and a final full test run.
+
+### Which stretch goals are you committing to, and which are you dropping?
+
+- **Committing:** Waitlist history (this checkpoint's feature) and no-show handling, if time allows.
+- **Dropping:** Seating by table size (conflicts with FIFO), wait-time calculator (needs restaurant-specific data), and table assignment tracking (keeps scope small).
+
+### What will your 3-minute demo show?
+
+1. Start with an empty list and try **next** and **seat** (friendly messages, no crash).
+2. **Add** three parties, including a blank name, a size of `abc` or `0`, and a duplicate name (confirmation prompt).
+3. **View** the waitlist, then view next without removing.
+4. **Remove** a party from the middle by ticket number and view again.
+5. **Seat** two parties, then open **Seating History** (the new feature), including an invalid N.
+6. Run the JUnit suite, then quit.
+
+### Who does what?
+
+| Item | Owner |
+| --- | --- |
+| Route console through `Waitlist`, blank-name handling, duplicate confirmation | Grant |
+| `Queue.removeIf` fix, `Party` validation | Luci |
+| Seating history (`History` + menu), help option | Nate |
+| No-show handling (if time allows) | Luci |
+| Tests, `History` tests, final test run | Tia |
+| Message polish, demo script | Grant, Nate |
+
+## Attribution
+
+| Class or test file | Team member(s) | Contribution |
+| --- | --- | --- |
+| `Main.java` | Grant, Luci | Wrote, revised |
+| `Party.java` | Luci, Nate, Grant | Wrote (record), reviewed |
+| `Queue.java` | Grant | Wrote; fixed `removeIf` tail case |
+| `Waitlist.java` | Luci | Wrote (ticket IDs, events, validation); GenAI-assisted |
+| `WaitlistEvent.java` | Luci | Wrote |
+| `WaitlistListener.java` | Luci | Wrote |
+| `History.java` | Nate | Wrote; GenAI-assisted |
+| `PartyManager.java` | Nate, Grant | Wrote, revised, rewired to `Waitlist` |
+| `PromptDisplay.java` | Grant, Luci | Wrote, reviewed |
+| `PartyTest.java` | Tia, Grant | Wrote, tested |
+| `QueueTest.java` | Tia | Wrote, tested, fixed failing test |
+| `WaitlistTest.java` | Luci, Tia | Wrote (W1-W18), reviewed |
+| `HistoryTest.java` | Tia, Nate | Wrote, tested |
+
+## GenAI Use
+
+We each used GenAI individually and told the team where. In the scope and spec, GenAI helped with project and stretch-goal ideas, finding holes in our bad-input list and test plan, and wording. Nate used Claude to draw the system diagram from a written description and checked it against the spec. Luci used Gemini to check the tests for missing cases. Grant used ChatGPT on the model/view boundary. For this checkpoint, Claude reviewed the repository against the assignment, found bugs (the `Queue.removeIf` head case and the console not yet using `Waitlist`), and helped draft this README. We checked every suggestion against our code and rewrote it where it didn't match what we built.
